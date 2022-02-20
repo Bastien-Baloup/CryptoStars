@@ -57,13 +57,15 @@ export const appendScatterPoints = (selection, data, xScale, yScale, colorScale,
  * @param {Selection} gy an instance of d3.selection containing the group for the vertiical axis
  * @param {Selection} points an instance of d3.selection containing all points
  */
-export const addZoomPan = (selection, scaleExtent, xScale, yScale, gx, gy, points) => {
+export const addZoomPan = (selection, scaleExtent, xScale, yScale, gx, gy, points, delaunay) => {
+  let transform
   // A function that updates the chart when the user zoom and thus new boundaries are available
   const updateChart = (event) => {
-    // fetch updated scales
-    const newX = event.transform.rescaleX(xScale)
-    const newY = event.transform.rescaleY(yScale)
+    transform = event.transform
 
+    // fetch updated scales
+    const newX = transform.rescaleX(xScale)
+    const newY = transform.rescaleY(yScale)
     // Update axes with updated scales
     gx.call(d3.axisBottom(newX))
     gy.call(d3.axisLeft(newY))
@@ -80,7 +82,7 @@ export const addZoomPan = (selection, scaleExtent, xScale, yScale, gx, gy, point
     .extent([[0, 0], [selection.node().getBBox().width, selection.node().getBBox().height]])
     .on("zoom", updateChart)
 
-  // Add an invisible rect on top of the chart area to catch pointer events and trigger the zoom
+  // Add an invisible rect on top of the chart area to catch pointer events and trigger the zoom and the delaunay
   selection.append("rect")
     .attr("width", selection.node().getBBox().width)
     .attr("height", selection.node().getBBox().height)
@@ -88,5 +90,14 @@ export const addZoomPan = (selection, scaleExtent, xScale, yScale, gx, gy, point
     .style("pointer-events", "all")
     .attr('transform', selection.node().attributes.transform.value)
     .call(zoom)
-
+    .call(zoom.transform, d3.zoomIdentity)
+    .on("pointermove", event => {
+      // Does the invert tranformation from the zoom to calculate the unzommed equivalent of the pointer position
+      const p = transform.invert(d3.pointer(event))
+      // Uses the unzommed pointer positon to find the closest point with the delaunay
+      const i = delaunay.find(...p)
+      // Set a bigger radius for the closest point and normal radius for the others 
+      // then raise the closest point over the others
+      points.attr('r', (_, j) => (i === j ? 3 : 2)).raise()
+    })
 }

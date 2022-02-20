@@ -27,7 +27,7 @@ const clamp = (min, num, max) => Math.min(Math.max(num, min), max)
 const margin = { top: 10, right: 30, bottom: 30, left: 60 }
 const width = clamp(460, 0.9 * window.innerWidth, 1800) - margin.left - margin.right
 const height = clamp(400, 0.75 * window.innerHeight, 800) - margin.top - margin.bottom
-let svg, gx, gy, gpoints, xScale, yScale, colorScale, xAxis, yAxis, points
+let svg, gx, gy, gpoints, xScale, yScale, colorScale, xAxis, yAxis, points, delaunay
 
 /**
  * Initialise the svg element, the different groups and the scales for the plot
@@ -39,7 +39,7 @@ const setupPlot = () => {
   yScale = d3.scaleLog()
     .range([height, 0])
   colorScale = d3.scaleSymlog()
-    .constant(1e-15)
+    .constant(1e-11)
     .range(['red', 'white', 'green'])
     .clamp(true)
 
@@ -50,6 +50,7 @@ const setupPlot = () => {
   gy = d3Helper.createGroup(svg)
   // Setup points group
   gpoints = d3Helper.createGroup(svg)
+
   // call updatePlot function to do the initial fill of the plot
   updatePlot()
 }
@@ -77,8 +78,10 @@ const updatePlot = () => {
   }
   // Add new points to the plot
   points = d3Helper.appendScatterPoints(gpoints, props.data, xScale, yScale, colorScale, svg.transition().duration(750))
-
-  d3Helper.addZoomPan(svg, [0.5, 20], xScale, yScale, gx, gy, points)
+  // Setup delaunay from data
+  delaunay = d3.Delaunay.from(props.data, d => xScale(d.x), d => yScale(d.y))
+  // Setup the zoom, pan and delaunay
+  d3Helper.addZoomPan(svg, [0.5, 20], xScale, yScale, gx, gy, points, delaunay)
 }
 
 onMounted(() => setupPlot())
