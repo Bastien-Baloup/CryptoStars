@@ -81,7 +81,7 @@ const updatePlot = () => {
   // Setup delaunay from data
   delaunay = d3.Delaunay.from(props.data, d => xScale(d.x), d => yScale(d.y))
   // Setup the zoom, pan and delaunay
-  d3Helper.addZoomPan(svg, [0.5, 20], xScale, yScale, gx, gy, points, delaunay)
+  d3Helper.addZoomPan(d3.select('svg'), [0.5, 20], xScale, yScale, gx, gy, points, delaunay, width, height, margin)
 }
 
 onMounted(() => setupPlot())

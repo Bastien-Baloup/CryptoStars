@@ -57,7 +57,7 @@ export const appendScatterPoints = (selection, data, xScale, yScale, colorScale,
  * @param {Selection} gy an instance of d3.selection containing the group for the vertiical axis
  * @param {Selection} points an instance of d3.selection containing all points
  */
-export const addZoomPan = (selection, scaleExtent, xScale, yScale, gx, gy, points, delaunay) => {
+export const addZoomPan = (selection, scaleExtent, xScale, yScale, gx, gy, points, delaunay, width, height, margin) => {
   let transform
   // A function that updates the chart when the user zoom and thus new boundaries are available
   const updateChart = (event) => {
@@ -79,16 +79,16 @@ export const addZoomPan = (selection, scaleExtent, xScale, yScale, gx, gy, point
   // Setup the zoom and pan paramettres
   const zoom = d3.zoom()
     .scaleExtent(scaleExtent)  // This control how much you can unzoom and zoom
-    .extent([[0, 0], [selection.node().getBBox().width, selection.node().getBBox().height]])
+    .extent([[0, 0], [width, height]])
     .on("zoom", updateChart)
 
   // Add an invisible rect on top of the chart area to catch pointer events and trigger the zoom and the delaunay
   selection.append("rect")
-    .attr("width", selection.node().getBBox().width)
-    .attr("height", selection.node().getBBox().height)
+    .attr("width", width)
+    .attr("height", height)
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
     .style("fill", "none")
     .style("pointer-events", "all")
-    .attr('transform', selection.node().attributes.transform.value)
     .call(zoom)
     .call(zoom.transform, d3.zoomIdentity)
     .on("pointermove", event => {
