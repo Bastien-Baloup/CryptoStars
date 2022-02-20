@@ -1,0 +1,29 @@
+{
+  "name": "star-stocks",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src",
+    "format": "prettier .  --write"
+  },
+  "dependencies": {
+    "axios": "^0.26.0",
+    "d3": "^7.3.0",
+    "vue": "^3.2.25",
+    "vue-router": "^4.0.12"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^2.2.0",
+    "eslint": "^8.9.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-vue": "^8.4.1",
+    "prettier": "^2.5.1",
+    "sass": "^1.49.8",
+    "scss-reset": "^1.2.2",
+    "vite": "^2.8.0",
+    "vite-plugin-compression": "^0.5.1"
+  }
+}
