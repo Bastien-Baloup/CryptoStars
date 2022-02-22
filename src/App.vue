@@ -21,7 +21,7 @@ body {
   position: fixed;
   z-index: -1;
   inset: 0;
-  background: rgb(7, 11, 52);
+  background: #000318;
   background: linear-gradient(135deg, #000318 0%, #15163a 75%, #211f3a 100%);
 }
 </style>

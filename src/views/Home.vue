@@ -13,7 +13,11 @@
   <div v-if="data" class="data">
     <p v-if="error" class="err">{{ errMsg }}</p>
     <div v-else class="results">
-      <Scatter :data="ComputeScatterData(data.results)" />
+      <Scatter
+        :data="ComputeScatterData(data.results)"
+        xname="volume exchanged"
+        yname="last value"
+      />
     </div>
   </div>
 </template>
@@ -94,7 +98,7 @@ const ComputeScatterData = (aggregatesList, xDataType = 'v', yDataType = 'c') =>
         name: humaniseTicker(aggregate.T),
         x: aggregate[xDataType],
         y: aggregate[yDataType],
-        z: aggregate.c - aggregate.o
+        z: 100 * (aggregate.c - aggregate.o) / aggregate.o
       }
     })
   } else {
