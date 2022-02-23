@@ -1,7 +1,7 @@
-import { ref, toRefs } from "vue";
+import { ref, toRefs } from "vue"
 
 export const useNow = () => {
-  const nowDate = new Date();
+  const nowDate = new Date()
   const now = ref({
     year: nowDate.getFullYear(),
     month: nowDate.getMonth() + 1,
@@ -9,20 +9,21 @@ export const useNow = () => {
     hours: nowDate.getHours(),
     minutes: nowDate.getMinutes(),
     seconds: nowDate.getSeconds(),
-  });
-  const getNowISODate = () => {
+  })
+  const getISODate = (y = 0, m = 0, d = 0) => {
+    const year = now.value.year + y
+    const month = now.value.month + m
+    const day = now.value.day + d
     return (
-      now.value.year +
+      year +
       "-" +
-      (now.value.month < 10 ? "0" : "") +
-      now.value.month +
+      (month < 10 ? "0" : "") + month +
       "-" +
-      (now.value.day < 10 ? "0" : "") +
-      now.value.day
-    );
-  };
+      (day < 10 ? "0" : "") + day
+    )
+  }
   const updateNow = () => {
-    const newNowDate = new Date();
+    const newNowDate = new Date()
     now.value = {
       year: newNowDate.getFullYear(),
       month: newNowDate.getMonth() + 1,
@@ -30,12 +31,12 @@ export const useNow = () => {
       hours: newNowDate.getHours(),
       minutes: newNowDate.getMinutes(),
       seconds: newNowDate.getSeconds(),
-    };
-  };
+    }
+  }
 
   return {
     ...toRefs(now.value),
-    getNowISODate,
+    getISODate,
     updateNow,
-  };
-};
+  }
+}

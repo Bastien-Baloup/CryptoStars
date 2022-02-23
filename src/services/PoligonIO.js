@@ -1,4 +1,7 @@
 import axios from "axios"
+import { useNow } from '../composables/now'
+
+const { getISODate } = useNow()
 // Axios client for the Polygone.io REST API
 // using the Authorization header for authentification
 const apiClient = axios.create({
@@ -19,8 +22,15 @@ const apiClient = axios.create({
 export const getCryptoGroupedDaily = (date) => {
   // test if the string is a date formated in ISO 8601
   if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-    return apiClient.get("/v2/aggs/grouped/locale/global/market/crypto/" + date)
+    const _date = new Date(date)
+    if (_date <= new Date(getISODate(-2))) {
+      return Promise.reject(new Error('The chosen date can not be from over 2 year ago'))
+    } else if (_date > new Date(getISODate())) {
+      return Promise.reject(new Error('The chosen date can not be in the future'))
+    } else {
+      return apiClient.get("/v2/aggs/grouped/locale/global/market/crypto/" + date)
+    }
   } else {
-    return Promise.reject(new Error('The chosen date is not valid'))
+    return Promise.reject(new Error('The chosen date is not in a valid format'))
   }
 }

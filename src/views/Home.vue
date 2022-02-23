@@ -5,7 +5,8 @@
     v-model="date"
     type="date"
     name="date"
-    :max="getNowISODate()"
+    :min="getISODate(y = -2)"
+    :max="getISODate()"
     @change="fetchData"
   />
 
@@ -28,8 +29,8 @@ import { getCryptoGroupedDaily } from "../services/PoligonIO"
 
 import Scatter from '../components/Scatter.vue'
 
-const { getNowISODate } = useNow()
-let date = ref(getNowISODate())
+const { getISODate } = useNow()
+let date = ref(getISODate())
 let data = ref(null)
 let error = ref(false)
 let errMsg = ref('')
