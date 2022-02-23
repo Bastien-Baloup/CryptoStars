@@ -1,6 +1,6 @@
 <template>
   <h1>
-    <router-link :to="{ name: 'Home' }">StarStocks</router-link>
+    <router-link :to="{ name: 'Home' }">CryptoStars</router-link>
   </h1>
   <router-view :key="$route.fullPath" />
   <div class="background" />
