@@ -1,9 +1,14 @@
 <template>
+  <h1>
+    <router-link :to="{ name: 'Home' }">StarStocks</router-link>
+  </h1>
   <router-view :key="$route.fullPath" />
   <div class="background" />
 </template>
 
-<script></script>
+<script setup>
+import { RouterLink } from 'vue-router'
+</script>
 
 <style>
 body {
@@ -23,5 +28,9 @@ body {
   inset: 0;
   background: #000318;
   background: linear-gradient(135deg, #000318 0%, #15163a 75%, #211f3a 100%);
+}
+
+a {
+  color: #aaa;
 }
 </style>

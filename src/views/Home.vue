@@ -1,5 +1,4 @@
 <template>
-  <h1>StarStocks</h1>
   <label for="date">Date&nbsp;:</label>
   <input
     id="date"
@@ -35,6 +34,8 @@ let data = ref(null)
 let error = ref(false)
 let errMsg = ref('')
 
+const Error429Msg = "You've exceeded the maximum requests per minute allowed by the Polygon.io API. Please wait a minute then retry your request."
+
 /**
  * Use the PoligonIO API services to get the data asked by the form.
  * Additionaly handle errors thrown by the PoligonIO API service
@@ -57,7 +58,7 @@ const fetchData = async () => {
   )
   data.value = res.data
   error.value = data.value?.status === 'ERROR'
-  errMsg.value = data.value?.error
+  errMsg.value = res.status === 429 ? Error429Msg : data.value?.error
 
   // console.log(data.value)
 }
@@ -96,6 +97,7 @@ const ComputeScatterData = (aggregatesList, xDataType = 'v', yDataType = 'c') =>
     return sortedList.map((aggregate) => {
       return {
         name: humaniseTicker(aggregate.T),
+        t: aggregate.T,
         x: aggregate[xDataType],
         y: aggregate[yDataType],
         z: 100 * (aggregate.c - aggregate.o) / aggregate.o

@@ -6,6 +6,9 @@
 import { onMounted, watch } from '@vue/runtime-core'
 import * as d3 from 'd3'
 import * as d3Helper from '../helpers/d3Helper'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const props = defineProps({
   data: {
@@ -21,15 +24,11 @@ const props = defineProps({
   yname: { type: String, default: 'y' }
 })
 
-/**
- * Clamp number between two values
- */
-const clamp = (min, num, max) => Math.min(Math.max(num, min), max)
 
 let plot = {}
 plot.margin = { top: 10, right: 30, bottom: 30, left: 60 }
-plot.width = clamp(460, 0.9 * window.innerWidth, 1800) - plot.margin.left - plot.margin.right
-plot.height = clamp(400, 0.75 * window.innerHeight, 800) - plot.margin.top - plot.margin.bottom
+plot.width = 0.9 * window.innerWidth - plot.margin.left - plot.margin.right
+plot.height = 0.75 * window.innerHeight - plot.margin.top - plot.margin.bottom
 
 /**
  * Initialise the svg element, the different groups and the scales for the plot
@@ -64,6 +63,8 @@ const updatePlot = () => {
   }
   // Add new points to the plot
   plot.points = d3Helper.appendScatterPoints(plot, props.data, plot.svg.transition().duration(750))
+
+  d3Helper.addPointClickEvent(plot, event => console.log(router.push({ name: 'crypto', params: { ticker: d3.select(event.target).data()[0].t } })))
   // Setup the zoom, pan and delaunay
   plot.eventCatcher = d3Helper.addZoomPan(d3.select('svg'), [0.5, 20], plot)
   d3Helper.addTooltip(plot, props.xname, props.yname)

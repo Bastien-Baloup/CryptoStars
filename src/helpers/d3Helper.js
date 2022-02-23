@@ -86,16 +86,16 @@ export const addZoomPan = (selection, scaleExtent, plot) => {
 
 
   // Add an invisible rect on top of the chart area to catch pointer events and trigger the zoom
-  const rect = selection.append("rect")
-    .attr("width", plot.width)
-    .attr("height", plot.height)
-    .attr("transform", "translate(" + plot.margin.left + "," + plot.margin.top + ")")
-    .style("fill", "none")
-    .style("pointer-events", "all")
+  const eventCatcher = selection
+    .on('click', event => {
+      if (event.target.tagName === 'circle') {
+        event.target.dispatchEvent(new CustomEvent('customClick'))
+      }
+    })
     .call(zoom)
     .call(zoom.transform, d3.zoomIdentity)
 
-  return rect
+  return eventCatcher
 }
 
 export const addTooltip = (plot, xName, yName, zName) => {
@@ -121,20 +121,23 @@ export const addTooltip = (plot, xName, yName, zName) => {
     <ul class="value-list">
       <li>${xName}&nbsp;: ${data.x.toFixed(4).replace(/[.0]+$/g, "")}</li>
       <li>${yName}&nbsp;: ${data.y.toFixed(4).replace(/[.0]+$/g, "") ? data.y.toFixed(4).replace(/[.0]+$/g, "") : data.y.toFixed(6).replace(/[.0]+$/g, "")}</li>
-      <li>value ${data.z >= 0 ? '+' : ''}${data.z.toFixed(4).replace(/[.0]+$/g, "") ? data.z.toFixed(4).replace(/[.0]+$/g, "") : data.z.toFixed(6).replace(/[.0]+$/g, "")}%</li>
+      <li>value change&nbsp;:  ${data.z >= 0 ? '+' : ''}${data.z.toFixed(4).replace(/[.0]+$/g, "") ? data.z.toFixed(4).replace(/[.0]+$/g, "") : data.z.toFixed(6).replace(/[.0]+$/g, "")}%</li>
     </ul>
     `
   }
 
   plot.eventCatcher.on("pointermove", event => {
+    let [mx, my] = d3.pointer(event)
+    mx = mx - plot.margin.left
+    my = my - plot.margin.top
     // get the current zoom transformation
     const zoomTransform = d3.zoomTransform(plot.eventCatcher.node())
     // Does the invert tranformation from the zoom to calculate the unzommed equivalent of the pointer position
-    const p = zoomTransform.invert(d3.pointer(event))
+    const p = zoomTransform.invert([mx, my])
     // Uses the unzommed pointer positon to find the closest point with the delaunay
     const i = delaunay.find(...p)
 
-    const [mx, my] = d3.pointer(event)
+
     const xRatio = mx / plot.width
     const yRatio = my / plot.height
 
@@ -155,4 +158,10 @@ export const addTooltip = (plot, xName, yName, zName) => {
       tooltip.style('opacity', '0')
     }
   })
+
+
+}
+
+export const addPointClickEvent = (plot, eventHandler) => {
+  plot.points.on('customClick', eventHandler)
 }
