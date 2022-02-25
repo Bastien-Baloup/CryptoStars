@@ -33,7 +33,7 @@ export const setupPlot = (plot) => {
     .range([plot.height, 0])
   plot.colorScale = d3.scaleSymlog()
     .constant(1e-1)
-    .range(['red', 'white', 'green'])
+    .range(['#c60606', 'white', '#00b909'])
     .clamp(true)
 
   // Setup svg and main group
@@ -41,6 +41,22 @@ export const setupPlot = (plot) => {
   // Setup axes groups
   plot.gx = createGroup(plot.svg).attr("transform", "translate(0," + plot.height + ")")
   plot.gy = createGroup(plot.svg)
+
+  // Add X axis label:
+  plot.gx.append("text")
+    .attr("class", "label")
+    .attr("text-anchor", "end")
+    .attr("x", plot.width + 15)
+    .attr("y", 40)
+
+  // Y axis label:
+  plot.gy.append("text")
+    .attr("class", "label")
+    .attr("text-anchor", "end")
+    .attr("transform", "rotate(-90)")
+    .attr("y", -plot.margin.left + 20)
+    .attr("x", -plot.margin.top + 35)
+
   // Setup points group
   plot.gpoints = createGroup(plot.svg)
 }
@@ -104,8 +120,6 @@ export const addTooltip = (plot, xName, yName, zName) => {
   // Setup tooltip element
   const tooltip = d3.select(d3.select('svg').node().parentNode)
     .style("position", "relative")
-    .style("width", (plot.width + plot.margin.left + plot.margin.right) + "px")
-    .style("height", (plot.height + plot.margin.top + plot.margin.bottom) + "px")
     .append("div")
     .attr("class", "tooltip")
   /**
@@ -152,8 +166,8 @@ export const addTooltip = (plot, xName, yName, zName) => {
         .attr('r', 5).raise()
       tooltip.style('opacity', '1')
         .html(tooltipHtml(closest.data()[0], xName, yName, zName))
-        .style('left', `${xRatio > 0.75 ? mx - 250 : xRatio < 0.15 ? mx + 100 : mx + 80}px`)
-        .style('top', `${yRatio > 0.75 ? my - 150 : yRatio < 0.15 ? my + 30 : my - 50}px`)
+        .style('left', `${xRatio > 0.85 ? mx - 250 : mx + 100}px`)
+        .style('top', `${yRatio > 0.90 ? my - 120 : yRatio < 0.10 ? my + 30 : my - 50}px`)
     } else {
       tooltip.style('opacity', '0')
     }

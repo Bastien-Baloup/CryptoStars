@@ -1,14 +1,17 @@
 <template>
-  <label for="date">Date&nbsp;:</label>
-  <input
-    id="date"
-    v-model="date"
-    type="date"
-    name="date"
-    :min="getISODate(y = -2)"
-    :max="getISODate()"
-    @change="fetchData"
-  />
+  <div class="controls">
+    <label id="date-label" for="date">Date&nbsp;:</label>
+    <input
+      id="date"
+      v-model="date"
+      type="date"
+      name="date"
+      :min="getISODate(y = -2)"
+      :max="getISODate()"
+      pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"
+      @change="fetchData"
+    />
+  </div>
 
   <div v-if="data" class="data">
     <p v-if="error" class="err">{{ errMsg }}</p>
@@ -113,3 +116,24 @@ const ComputeScatterData = (aggregatesList, xDataType = 'v', yDataType = 'c') =>
 
 onMounted(() => fetchData())
 </script>
+
+<style lang="scss" scoped>
+.controls {
+  display: flex;
+  border-bottom: solid 1px #aaa;
+  #date-label {
+    margin-block: auto;
+    padding-left: 1rem;
+  }
+  #date {
+    margin: 1rem;
+    background: none;
+    border: solid 1px #aaa;
+    color: #aaa;
+    &::-webkit-calendar-picker-indicator {
+      filter: invert(76%) sepia(11%) saturate(0%) hue-rotate(248deg)
+        brightness(88%) contrast(92%);
+    }
+  }
+}
+</style>

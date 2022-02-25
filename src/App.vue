@@ -1,7 +1,10 @@
 <template>
-  <h1>
-    <router-link :to="{ name: 'Home' }">CryptoStars</router-link>
-  </h1>
+  <header>
+    <h1>
+      <router-link :to="{ name: 'Home' }">CryptoStars</router-link>
+    </h1>
+  </header>
+
   <router-view :key="$route.fullPath" />
   <div class="background" />
 </template>
@@ -10,26 +13,27 @@
 import { RouterLink } from 'vue-router'
 </script>
 
-<style>
+<style lang="scss">
+@import "normalize.css/normalize.css";
 body {
-  background-color: transparent;
   color: #aaa;
+  background: #000;
 }
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  margin-top: 60px;
 }
-.background {
-  position: fixed;
-  z-index: -1;
-  inset: 0;
-  background: #000318;
-  background: linear-gradient(135deg, #000318 0%, #15163a 75%, #211f3a 100%);
+header {
+  display: flex;
+  border-bottom: solid 1px #aaa;
+  h1 {
+    margin: 0;
+    padding: 1rem;
+    border-right: solid 1px #aaa;
+  }
 }
-
 a {
   color: #aaa;
 }

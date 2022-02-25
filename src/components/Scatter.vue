@@ -26,9 +26,9 @@ const props = defineProps({
 
 
 let plot = {}
-plot.margin = { top: 10, right: 30, bottom: 30, left: 60 }
-plot.width = 0.9 * window.innerWidth - plot.margin.left - plot.margin.right
-plot.height = 0.75 * window.innerHeight - plot.margin.top - plot.margin.bottom
+plot.margin = { top: 20, right: 20, bottom: 60, left: 60 }
+plot.width = window.innerWidth - plot.margin.left - plot.margin.right
+plot.height = 0.8 * window.innerHeight - plot.margin.top - plot.margin.bottom
 
 /**
  * Initialise the svg element, the different groups and the scales for the plot
@@ -52,6 +52,10 @@ const updatePlot = () => {
   // Setup axes
   plot.xAxis = plot.gx.transition().duration(750).call(d3.axisBottom(plot.xScale))
   plot.yAxis = plot.gy.transition().duration(750).call(d3.axisLeft(plot.yScale))
+
+  console.log(plot.gx.select('text'))
+  plot.gx.select('text').text(props.xname)
+  plot.gy.select('text').text(props.yname)
   // Remove old points if present
   if (plot.points) {
     plot.points.call(exit =>
@@ -76,11 +80,21 @@ watch(props, () => updatePlot())
 </script>
 
 
+<style lang="scss" scoped>
+#scatter-container {
+  position: relative;
+  width: 100vw;
+  min-height: 80vh;
+  background: #000;
+  margin-block: 1rem;
+}
+</style>
+
 <style lang="scss">
 .tooltip {
   position: absolute;
   opacity: 0;
-  background-color: #15163ac0;
+  background-color: #000a;
   border: solid 2px;
   border-radius: 5px;
   z-index: 1;
@@ -90,5 +104,13 @@ watch(props, () => updatePlot())
     text-align: left;
     padding-inline: 10px;
   }
+}
+.label {
+  fill: #aaa;
+  font-size: 1rem;
+}
+.tick {
+  fill: #aaa;
+  font-size: 0.75rem;
 }
 </style>
