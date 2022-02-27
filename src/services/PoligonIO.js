@@ -112,3 +112,25 @@ export const ComputeScatterData = (aggregatesList, xDataType = 'v', yDataType = 
     }
   }
 }
+
+export const dataTypeName = (dataType) => {
+  switch (dataType) {
+    case "v":
+      return "Traded volume"
+    case "t":
+      return "Time"
+    case "c":
+      return "Close price"
+    case "h":
+      return "Highest price"
+    case "l":
+      return "Lowest price"
+    case "o":
+      return "Open Price"
+    case "vw":
+      return "Volume weighted average price"
+
+    default:
+      return undefined
+  }
+}

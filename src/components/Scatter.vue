@@ -48,8 +48,8 @@ const setupPlot = () => {
  */
 const updatePlot = () => {
   // Setup scales domains
-  plot.xScale.domain([d3.min(props.data, d => d.x), d3.min([1e10, d3.max(props.data, d => d.x)])])
-  plot.yScale.domain([d3.min(props.data, d => d.y), d3.min([1e5, d3.max(props.data, d => d.y)])])
+  plot.xScale.domain([d3.min(props.data, d => d.x), d3.max(props.data, d => d.x)])
+  plot.yScale.domain([d3.min(props.data, d => d.y), d3.max(props.data, d => d.y)])
   const zLimit = d3.min([25, d3.max(props.data, d => Math.abs(d.z))])
   plot.colorScale.domain([-zLimit, 0, zLimit])
   // Setup axes
@@ -70,7 +70,7 @@ const updatePlot = () => {
   // Add new points to the plot
   plot.points = d3Helper.appendScatterPoints(plot, props.data, plot.svg.transition().duration(750))
   // Add eventListeners on each points
-  if (props.clicktotickerpage) { d3Helper.addPointClickEvent(plot, event => console.log(router.push({ name: 'crypto', params: { ticker: d3.select(event.target).data()[0].t } }))) }
+  if (props.clicktotickerpage) { d3Helper.addPointClickEvent(plot, event => router.push({ name: 'crypto', params: { ticker: d3.select(event.target).data()[0].t } })) }
   // Add lines between points
   if (props.lines) {
     // in case of update, remove the old lines

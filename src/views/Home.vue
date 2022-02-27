@@ -13,6 +13,28 @@
         @change="fetchData"
       />
     </div>
+    <div class="axis">
+      <label for="xaxis" class="xaxis-label">X Axis&nbsp;:</label>
+      <select id="xaxis" v-model="xDataType" name="xaxis">
+        <option value="v">Traded volume</option>
+        <option value="t">Time</option>
+        <option value="c">Close price</option>
+        <option value="h">Highest price</option>
+        <option value="l">Lowest price</option>
+        <option value="o">Open Price</option>
+        <option value="vw">Volume weighted average price</option>
+      </select>
+      <label for="yaxis">Y Axis&nbsp;:</label>
+      <select id="yaxis" v-model="yDataType" name="yaxis">
+        <option value="c">Close price</option>
+        <option value="h">Highest price</option>
+        <option value="l">Lowest price</option>
+        <option value="o">Open Price</option>
+        <option value="t">Time</option>
+        <option value="v">Traded volume</option>
+        <option value="vw">Volume weighted average price</option>
+      </select>
+    </div>
     <div class="filter">
       <SearchBar
         id="filter"
@@ -29,8 +51,8 @@
     <div v-else class="results">
       <Scatter
         :data="scatterData"
-        xname="volume exchanged"
-        yname="last value"
+        :xname="dataTypeName(xDataType)"
+        :yname="dataTypeName(yDataType)"
         tooltips
         clicktotickerpage
       />
@@ -41,7 +63,7 @@
 <script setup>
 import { ref, onMounted, computed } from "vue"
 import { useNow } from "../composables/now"
-import { getCryptoGroupedDaily, ComputeScatterData, humaniseTicker } from "../services/PoligonIO"
+import { getCryptoGroupedDaily, ComputeScatterData, humaniseTicker, dataTypeName } from "../services/PoligonIO"
 
 import Scatter from '../components/Scatter.vue'
 import SearchBar from '../components/SearchBar.vue'
@@ -55,9 +77,11 @@ const filter = ref(null)
 const error = ref(true)
 const errMsg = ref('')
 const filterInput = ref(null)
+const xDataType = ref('v')
+const yDataType = ref('c')
 
 // computed values
-const scatterData = computed(() => data.value ? ComputeScatterData(filter.value ? filteredData.value : data.value.results) : undefined)
+const scatterData = computed(() => data.value ? ComputeScatterData(filter.value ? filteredData.value : data.value.results, xDataType.value, yDataType.value) : undefined)
 const filteredData = computed(() => data.value.results.filter(value => humaniseTicker(value.T).includes(" " + filter.value + " ")))
 // set the error message whent it comes from the ComputeScatterData function
 if (scatterData.value?.error) {
@@ -90,13 +114,14 @@ const fetchData = async () => {
   data.value = res.data
   error.value = data.value?.status === 'ERROR' || data.value?.resultsCount === 0
   errMsg.value = res.status === 429 ? Error429Msg : data.value?.error ? data.value.error : scatterData.value.message
-  console.log(res)
 }
 
 // update filteredData value when the filter has been changed
 const applyFilter = () => {
   filter.value = filterInput.value.search.toUpperCase()
 }
+
+console.log()
 
 // initial data fetch
 onMounted(() => fetchData())
@@ -106,6 +131,9 @@ onMounted(() => fetchData())
 .controls {
   display: flex;
   border-bottom: solid 1px #aaa;
+  & > * {
+    border-right: solid 1px #aaa;
+  }
   input,
   select {
     width: 155px;
@@ -115,7 +143,6 @@ onMounted(() => fetchData())
     color: #aaa;
   }
   .date {
-    border-right: solid 1px #aaa;
     #date-label {
       margin-block: auto;
       padding-left: 1rem;
@@ -128,8 +155,8 @@ onMounted(() => fetchData())
       }
     }
   }
-  .filter {
-    border-right: solid 1px #aaa;
+  .xaxis-label {
+    margin-left: 1rem;
   }
 }
 </style>

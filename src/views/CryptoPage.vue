@@ -34,18 +34,46 @@
         <option value="1 month">1 month</option>
       </select>
     </div>
+    <div class="axis">
+      <label for="xaxis" class="xaxis-label">X Axis&nbsp;:</label>
+      <select id="xaxis" v-model="xDataType" name="xaxis">
+        <option value="v">Traded volume</option>
+        <option value="t">Time</option>
+        <option value="c">Close price</option>
+        <option value="h">Highest price</option>
+        <option value="l">Lowest price</option>
+        <option value="o">Open Price</option>
+        <option value="vw">Volume weighted average price</option>
+      </select>
+      <label for="yaxis">Y Axis&nbsp;:</label>
+      <select id="yaxis" v-model="yDataType" name="yaxis">
+        <option value="c">Close price</option>
+        <option value="h">Highest price</option>
+        <option value="l">Lowest price</option>
+        <option value="o">Open Price</option>
+        <option value="t">Time</option>
+        <option value="v">Traded volume</option>
+        <option value="vw">Volume weighted average price</option>
+      </select>
+    </div>
   </div>
 
   <div v-if="data" class="data">
     <p v-if="error" class="err">{{ errMsg }}</p>
     <div v-else class="results">
-      <Scatter :data="scatterData" xname="volume exchanged" yname="close value" tooltips lines />
+      <Scatter
+        :data="scatterData"
+        :xname="dataTypeName(xDataType)"
+        :yname="dataTypeName(yDataType)"
+        tooltips
+        lines
+      />
     </div>
   </div>
 </template>
 <script setup>
 import { computed, ref, onMounted } from 'vue'
-import { humaniseTicker, getCryptoAggregate, ComputeScatterData } from '../services/PoligonIO'
+import { humaniseTicker, getCryptoAggregate, ComputeScatterData, dataTypeName } from '../services/PoligonIO'
 import { useNow } from '../composables/now'
 import Scatter from '../components/Scatter.vue'
 
@@ -61,9 +89,11 @@ const selectTimespan = ref("3 day")
 const data = ref([])
 const error = ref(true)
 const errMsg = ref('')
+const xDataType = ref('v')
+const yDataType = ref('c')
 // computed values
 const timespan = computed(() => selectTimespan.value ? selectTimespan.value.split(' ') : ['', '']) // array containing the timespan type (day, week or month) and it's multiplier (number of days, weeks or months)
-const scatterData = computed(() => data.value ? ComputeScatterData(data.value.results) : undefined)
+const scatterData = computed(() => data.value ? ComputeScatterData(data.value.results, xDataType.value, yDataType.value) : undefined)
 
 if (scatterData.value?.error) {
   errMsg.value = scatterData.value.message
@@ -114,6 +144,9 @@ onMounted(() => fetchData())
   }
   .dates {
     border-inline: solid 1px #aaa;
+  }
+  .axis {
+    border-left: solid 1px #aaa;
   }
   label {
     margin-block: auto;
