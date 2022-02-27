@@ -6,6 +6,7 @@
     <h1>
       <router-link :to="{ name: 'Home' }">CryptoStars</router-link>
     </h1>
+    <SearchBar id="search" ref="search" label="Search trade market" @submit.prevent="handleSubmit" />
   </header>
 
   <router-view :key="$route.fullPath" />
@@ -13,9 +14,23 @@
 </template>
 
 <script setup>
-import { RouterLink } from 'vue-router'
+import { ref } from 'vue'
+import { RouterLink, useRouter } from 'vue-router'
+import SearchBar from './components/SearchBar.vue'
+
+const search = ref(null)
+const router = useRouter()
+
+const handleSubmit = () => {
+  router.push({ name: 'crypto', params: { ticker: 'X:' + search.value.search.toUpperCase() } })
+}
 </script>
 
+<style lang="scss" scoped>
+.search {
+  border-left: solid 1px #aaa;
+}
+</style>
 <style lang="scss">
 @import "normalize.css/normalize.css";
 body {
