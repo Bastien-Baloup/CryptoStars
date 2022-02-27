@@ -25,6 +25,9 @@ export const createSvg = (selector, width, height, margin) => d3.select(selector
  */
 export const createGroup = (selection) => selection.append("g")
 
+/**
+ * Setup the svg, g, scales and axis of the plot
+ */
 export const setupPlot = (plot) => {
   // Setup scales
   plot.xScale = d3.scaleLog()
@@ -123,7 +126,7 @@ export const addZoomPan = (selection, scaleExtent, plot) => {
     plot.points
       .attr('cx', (d) => newX(d.x))
       .attr('cy', (d) => newY(d.y))
-
+    // if there is a line, update it too
     if (plot?.lines) {
       plot.lines
         .attr(
@@ -162,6 +165,9 @@ export const addZoomPan = (selection, scaleExtent, plot) => {
   return eventCatcher
 }
 
+/**
+ * Add a tooltip following the cursor showing the data from the closest point
+ */
 export const addTooltip = (plot, xName, yName, zName) => {
   // Setup delaunay from data
   const delaunay = d3.Delaunay.from(plot.points.data(), d => plot.xScale(d.x), d => plot.yScale(d.y))
@@ -188,8 +194,11 @@ export const addTooltip = (plot, xName, yName, zName) => {
     `
   }
 
+  // add eventListener 
   plot.eventCatcher.on("pointermove", event => {
+    // get pointer coordinates
     let [mx, my] = d3.pointer(event)
+    // correct the coordinates by applying the margins
     mx = mx - plot.margin.left
     my = my - plot.margin.top
     // get the current zoom transformation
@@ -199,12 +208,12 @@ export const addTooltip = (plot, xName, yName, zName) => {
     // Uses the unzommed pointer positon to find the closest point with the delaunay
     const i = delaunay.find(...p)
 
-
     const xRatio = mx / plot.width
     const yRatio = my / plot.height
 
     // If the closest point is close enougth
-    // Set a bigger radius for the closest point and normal radius for the others 
+    // Set a bigger radius for the closest point and normal radius for the others
+    // and make the tooltip visible
     // then raise the closest point over the others
     plot.points.attr('r', 2)
     const closest = d3.select(plot.points.nodes()[i])
@@ -214,6 +223,8 @@ export const addTooltip = (plot, xName, yName, zName) => {
         .attr('r', 5).raise()
       tooltip.style('opacity', '1')
         .html(tooltipHtml(closest.data()[0], xName, yName, zName))
+        // Change the position of the tooltip to follow the cursor
+        // and adjust it to keep the tolltip inside the plot when the cursor is close to the sides
         .style('left', `${xRatio > 0.85 ? mx - 250 : mx + 100}px`)
         .style('top', `${yRatio > 0.90 ? my - 120 : yRatio < 0.10 ? my + 30 : my - 50}px`)
     } else {
@@ -223,7 +234,9 @@ export const addTooltip = (plot, xName, yName, zName) => {
 
 
 }
-
+/**
+ * Add an eventListener for the clicks on the dataPoints
+ */
 export const addPointClickEvent = (plot, eventHandler) => {
   plot.points.on('customClick', eventHandler)
 }

@@ -10,7 +10,6 @@
   </header>
 
   <router-view :key="$route.fullPath" />
-  <div class="background" />
 </template>
 
 <script setup>
@@ -21,6 +20,7 @@ import SearchBar from './components/SearchBar.vue'
 const search = ref(null)
 const router = useRouter()
 
+// send user to the page showing the history of the chosen trade market
 const handleSubmit = () => {
   router.push({ name: 'crypto', params: { ticker: 'X:' + search.value.search.toUpperCase() } })
 }
@@ -29,19 +29,6 @@ const handleSubmit = () => {
 <style lang="scss" scoped>
 .search {
   border-left: solid 1px #aaa;
-}
-</style>
-<style lang="scss">
-@import "normalize.css/normalize.css";
-body {
-  color: #aaa;
-  background: #000;
-}
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
 }
 header {
   display: flex;
@@ -59,5 +46,18 @@ header {
 }
 a {
   color: #aaa;
+}
+</style>
+<style lang="scss">
+@import "normalize.css/normalize.css";
+body {
+  color: #aaa;
+  background: #000;
+}
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
 }
 </style>

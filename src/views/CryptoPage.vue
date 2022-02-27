@@ -50,23 +50,22 @@ import { useNow } from '../composables/now'
 import Scatter from '../components/Scatter.vue'
 
 const { getISODate } = useNow()
-
+// props
 const props = defineProps({
   ticker: { type: String, default: '' }
 })
-
+// reactuve state
 const from = ref(getISODate(0, -1))
 const to = ref(getISODate())
 const selectTimespan = ref("3 day")
 const data = ref([])
-const error = ref(false)
+const error = ref(true)
 const errMsg = ref('')
-
-const timespan = computed(() => selectTimespan.value ? selectTimespan.value.split(' ') : ['', ''])
+// computed values
+const timespan = computed(() => selectTimespan.value ? selectTimespan.value.split(' ') : ['', '']) // array containing the timespan type (day, week or month) and it's multiplier (number of days, weeks or months)
 const scatterData = computed(() => data.value ? ComputeScatterData(data.value.results) : undefined)
 
 if (scatterData.value?.error) {
-  error.value = true
   errMsg.value = scatterData.value.message
 }
 
@@ -77,28 +76,28 @@ const Error429Msg = "You've exceeded the maximum requests per minute allowed by 
  * Additionaly handle errors thrown by the PoligonIO API service
  */
 const fetchData = async () => {
-  const res = await getCryptoAggregate(props.ticker, from.value, to.value, timespan.value[1], timespan.value[0]).catch((err) => {
-    console.log(err.message)
-    if (err.response?.data?.status === 'ERROR') {
-      return err.response
-    } else {
-      return {
-        data: {
-          status: 'ERROR',
-          error: err.message
+  const res = await getCryptoAggregate(props.ticker, from.value, to.value, timespan.value[1], timespan.value[0])
+    .catch((err) => {
+      console.log(err.message)
+      if (err.response?.data?.status === 'ERROR') {
+        return err.response
+      } else {
+        return {
+          data: {
+            status: 'ERROR',
+            error: err.message
+          }
         }
       }
-    }
-
-  }
-  )
+    })
+  // update state
   data.value = res.data
-  error.value = data.value?.status === 'ERROR'
-  errMsg.value = res.status === 429 ? Error429Msg : data.value?.error
+  error.value = data.value?.status === 'ERROR' || data.value?.resultsCount === 0
+  errMsg.value = res.status === 429 ? Error429Msg : data.value?.error ? data.value.error : scatterData.value.message
 
 
 }
-
+// initial data fetch
 onMounted(() => fetchData())
 </script>
 

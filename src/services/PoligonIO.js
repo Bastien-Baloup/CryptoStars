@@ -34,7 +34,15 @@ export const getCryptoGroupedDaily = (date) => {
     return Promise.reject(new Error('The chosen date is not in a valid format'))
   }
 }
-
+/**
+ * Get aggregates bar of the chosen exchange market with the chosen timespan from the chosen period
+ * @param {String} ticker name under with the exchange market is listed
+ * @param {String} from The beginning date for the aggregate window. Formated in ISO 8601 (ex. 2022-02-27)
+ * @param {String} to The end fate for the aggregate window. Formated in ISO 8601
+ * @param {String} timespan The timespan type. Either "minute", "hour", "day", "week", "month", "quarter" or "year".
+ * @param {String | Number} timespanMult The timespan multiplier (the number of minutes, hours, days, ...)
+ * @returns {Promise<AxiosResponse>}
+ */
 export const getCryptoAggregate = (ticker, from, to, timespan, timespanMult) => {
   if (/^\d{4}-\d{2}-\d{2}$/.test(from) && /^\d{4}-\d{2}-\d{2}$/.test(to)) {
     const _from = new Date(from)
@@ -70,6 +78,9 @@ export const humaniseTicker = ticker =>
     .replace(/AUD\b/, " / AUD ")
     .replace(/JPY\b/, " / JPY ")
 
+/**
+ * return an Array of data usable by the Scatter component from the arggregateList using the chosen DataTypes
+ */
 export const ComputeScatterData = (aggregatesList, xDataType = 'v', yDataType = 'c') => {
   if (!aggregatesList) {
     return {

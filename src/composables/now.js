@@ -10,6 +10,9 @@ export const useNow = () => {
     minutes: nowDate.getMinutes(),
     seconds: nowDate.getSeconds(),
   })
+  /**
+   * return today's date plus or minus the params
+   */
   const getISODate = (y = 0, m = 0, d = 0) => {
     const year = now.value.year + y
     const month = now.value.month + m
@@ -22,21 +25,9 @@ export const useNow = () => {
       (day < 10 ? "0" : "") + day
     )
   }
-  const updateNow = () => {
-    const newNowDate = new Date()
-    now.value = {
-      year: newNowDate.getFullYear(),
-      month: newNowDate.getMonth() + 1,
-      day: newNowDate.getDate(),
-      hours: newNowDate.getHours(),
-      minutes: newNowDate.getMinutes(),
-      seconds: newNowDate.getSeconds(),
-    }
-  }
 
   return {
     ...toRefs(now.value),
     getISODate,
-    updateNow,
   }
 }

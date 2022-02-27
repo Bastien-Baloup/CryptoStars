@@ -1,7 +1,8 @@
 <template>
   <form class="search" aria-label="value searchbar">
+    <!-- label -->
     <label :id="id + '-label'" :for="id + '-input'">{{ props.label }}&nbsp;:</label>
-
+    <!-- combobox -->
     <div
       :id="id + 'AutocompletedInput'"
       :ref="id + 'AutocompletedInput'"
@@ -12,6 +13,7 @@
       aria-owns="autocomplete-results"
       :aria-expanded="isOpen"
     >
+      <!-- input -->
       <input
         :id="id + '-input'"
         v-model="search"
@@ -36,6 +38,7 @@
         @keydown.up.prevent="onArrowUp"
         @keydown.enter.prevent="onEnter"
       />
+      <!-- list of suggestions -->
       <ul
         v-show="isOpen"
         :id="id + '-autocomplete-results'"
@@ -56,7 +59,7 @@
         >{{ result }}</li>
       </ul>
     </div>
-
+    <!-- submit button -->
     <input type="submit" value="Go" class="submit" />
   </form>
 </template>
@@ -82,6 +85,8 @@ const debounceTimeout = ref(null)
 const arrowCounter = ref(0)
 const activedescendant = ref("")
 
+// All possible value from witch the suggestions will come
+// usualy this gets the list from an API but here because the PoligonIO aPI only allow 5 query/min, we use a static array
 const searchResults = props.isfilterbar ?
   [
     "1INCH",
@@ -506,11 +511,13 @@ const searchResults = props.isfilterbar ?
     "ZRXUSD"
   ]
 
+// expose the search value to be used by the parent
 defineExpose({ search })
 
 //methods
 
 //remove the selection then, when the user has stopped typing for 500ms, load the new suggestions
+// usefull when searchResults commmes from an API
 const onInput = () => {
   arrowCounter.value = -1
   if (search.value.length > 0) {

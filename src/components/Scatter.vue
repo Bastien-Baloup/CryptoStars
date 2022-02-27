@@ -28,7 +28,7 @@ const props = defineProps({
 })
 
 
-let plot = {}
+const plot = {}
 plot.margin = { top: 20, right: 20, bottom: 60, left: 60 }
 plot.width = window.innerWidth - plot.margin.left - plot.margin.right
 plot.height = 0.8 * window.innerHeight - plot.margin.top - plot.margin.bottom
@@ -69,10 +69,11 @@ const updatePlot = () => {
   }
   // Add new points to the plot
   plot.points = d3Helper.appendScatterPoints(plot, props.data, plot.svg.transition().duration(750))
-
+  // Add eventListeners on each points
   if (props.clicktotickerpage) { d3Helper.addPointClickEvent(plot, event => console.log(router.push({ name: 'crypto', params: { ticker: d3.select(event.target).data()[0].t } }))) }
-
+  // Add lines between points
   if (props.lines) {
+    // in case of update, remove the old lines
     if (plot.lines) {
       plot.lines.transition(plot.svg.transition().duration(750)).attr("opacity", 0).remove()
     }
@@ -83,6 +84,7 @@ const updatePlot = () => {
   // Setup tooltips
   if (props.tooltips) { d3Helper.addTooltip(plot, props.xname, props.yname) }
 }
+// setup the plot
 onMounted(() => setupPlot())
 // update the plot when the props changes
 watch(props, () => updatePlot())
