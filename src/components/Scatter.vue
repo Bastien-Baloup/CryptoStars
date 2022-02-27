@@ -21,7 +21,10 @@ const props = defineProps({
     ]
   },
   xname: { type: String, default: 'x' },
-  yname: { type: String, default: 'y' }
+  yname: { type: String, default: 'y' },
+  lines: { type: Boolean, default: false },
+  tooltips: { type: Boolean, default: false },
+  clicktotickerpage: { type: Boolean, default: false },
 })
 
 
@@ -45,15 +48,14 @@ const setupPlot = () => {
  */
 const updatePlot = () => {
   // Setup scales domains
-  plot.xScale.domain([d3.min(props.data, d => d.x), d3.min([1e10, d3.max(props.data, d => d.x)])]).nice()
-  plot.yScale.domain([d3.min(props.data, d => d.y), d3.min([1e5, d3.max(props.data, d => d.y)])]).nice()
+  plot.xScale.domain([d3.min(props.data, d => d.x), d3.min([1e10, d3.max(props.data, d => d.x)])])
+  plot.yScale.domain([d3.min(props.data, d => d.y), d3.min([1e5, d3.max(props.data, d => d.y)])])
   const zLimit = d3.min([25, d3.max(props.data, d => Math.abs(d.z))])
   plot.colorScale.domain([-zLimit, 0, zLimit])
   // Setup axes
   plot.xAxis = plot.gx.transition().duration(750).call(d3.axisBottom(plot.xScale))
   plot.yAxis = plot.gy.transition().duration(750).call(d3.axisLeft(plot.yScale))
 
-  console.log(plot.gx.select('text'))
   plot.gx.select('text').text(props.xname)
   plot.gy.select('text').text(props.yname)
   // Remove old points if present
@@ -68,10 +70,18 @@ const updatePlot = () => {
   // Add new points to the plot
   plot.points = d3Helper.appendScatterPoints(plot, props.data, plot.svg.transition().duration(750))
 
-  d3Helper.addPointClickEvent(plot, event => console.log(router.push({ name: 'crypto', params: { ticker: d3.select(event.target).data()[0].t } })))
+  if (props.clicktotickerpage) { d3Helper.addPointClickEvent(plot, event => console.log(router.push({ name: 'crypto', params: { ticker: d3.select(event.target).data()[0].t } }))) }
+
+  if (props.lines) {
+    if (plot.lines) {
+      plot.lines.transition(plot.svg.transition().duration(750)).attr("opacity", 0).remove()
+    }
+    plot.lines = d3Helper.addLines(plot, props.data)
+  }
   // Setup the zoom, pan and delaunay
   plot.eventCatcher = d3Helper.addZoomPan(d3.select('svg'), [0.5, 20], plot)
-  d3Helper.addTooltip(plot, props.xname, props.yname)
+  // Setup tooltips
+  if (props.tooltips) { d3Helper.addTooltip(plot, props.xname, props.yname) }
 }
 onMounted(() => setupPlot())
 // update the plot when the props changes

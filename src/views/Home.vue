@@ -1,5 +1,6 @@
 <template>
   <div class="controls">
+    <div class="date">
     <label id="date-label" for="date">Date&nbsp;:</label>
     <input
       id="date"
@@ -17,26 +18,35 @@
     <p v-if="error" class="err">{{ errMsg }}</p>
     <div v-else class="results">
       <Scatter
-        :data="ComputeScatterData(data.results)"
+        :data="scatterData"
         xname="volume exchanged"
         yname="last value"
+        tooltips
+        clicktotickerpage
       />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue"
+import { ref, onMounted, computed } from "vue"
 import { useNow } from "../composables/now"
-import { getCryptoGroupedDaily } from "../services/PoligonIO"
+import { getCryptoGroupedDaily, ComputeScatterData, humaniseTicker } from "../services/PoligonIO"
 
 import Scatter from '../components/Scatter.vue'
 
 const { getISODate } = useNow()
-let date = ref(getISODate())
-let data = ref(null)
-let error = ref(false)
-let errMsg = ref('')
+const date = ref(getISODate())
+const data = ref(null)
+const error = ref(true)
+const errMsg = ref('')
+
+const scatterData = computed(() => data.value ? ComputeScatterData(data.value.results) : undefined)
+
+if (scatterData.value?.error) {
+  errMsg.value = scatterData.value.message
+}
+
 
 const Error429Msg = "You've exceeded the maximum requests per minute allowed by the Polygon.io API. Please wait a minute then retry your request."
 
@@ -61,8 +71,8 @@ const fetchData = async () => {
   }
   )
   data.value = res.data
-  error.value = data.value?.status === 'ERROR'
-  errMsg.value = res.status === 429 ? Error429Msg : data.value?.error
+  error.value = data.value?.status === 'ERROR' || data.value?.resultsCount === 0
+  errMsg.value = res.status === 429 ? Error429Msg : data.value?.error ? data.value.error : scatterData.value.message
 
   // console.log(data.value)
 }
@@ -121,6 +131,16 @@ onMounted(() => fetchData())
 .controls {
   display: flex;
   border-bottom: solid 1px #aaa;
+  input,
+  select {
+    width: 155px;
+    height: 25px;
+    margin: 1rem;
+    background: none;
+    color: #aaa;
+  }
+  .date {
+    border-right: solid 1px #aaa;
   #date-label {
     margin-block: auto;
     padding-left: 1rem;
@@ -133,6 +153,7 @@ onMounted(() => fetchData())
     &::-webkit-calendar-picker-indicator {
       filter: invert(76%) sepia(11%) saturate(0%) hue-rotate(248deg)
         brightness(88%) contrast(92%);
+    }
     }
   }
 }

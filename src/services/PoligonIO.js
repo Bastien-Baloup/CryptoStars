@@ -34,3 +34,70 @@ export const getCryptoGroupedDaily = (date) => {
     return Promise.reject(new Error('The chosen date is not in a valid format'))
   }
 }
+
+export const getCryptoAggregate = (ticker, from, to, timespan, timespanMult) => {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(from) && /^\d{4}-\d{2}-\d{2}$/.test(to)) {
+    const _from = new Date(from)
+    const _to = new Date(to)
+    if (_from > _to) {
+      return Promise.reject(new Error('The chosen "from" date can not be after the chosen "to" date'))
+    }
+    else if (_from <= new Date(getISODate(-2))) {
+      return Promise.reject(new Error('The chosen "from" date can not be from over 2 year ago'))
+    }
+    else if (_to > new Date(getISODate())) {
+      return Promise.reject(new Error('The chosen "to" date can not be in the future'))
+    } else {
+      return apiClient.get("/v2/aggs/ticker/" + ticker + "/range/" + timespanMult + "/" + timespan + "/" + from + "/" + to)
+    }
+  } else {
+    return Promise.reject(new Error('The chosen date is not in a valid format'))
+  }
+}
+
+/**
+ * Makes ticker symboles returned by the PoligonIO API more readable by humans
+ * @param {String} ticker PoligonIO ticker symbols from crypto markets
+ */
+export const humaniseTicker = ticker =>
+  ticker.replace(/\bX:/g, " ")
+    .replace(/ETH\b/, " / ETH ")
+    .replace(/BTC\b/, " / BTC ")
+    .replace(/USD\b/, " / USD ")
+    .replace(/EUR\b/, " / EUR ")
+    .replace(/GBP\b/, " / GBP ")
+    .replace(/CAD\b/, " / CAD ")
+    .replace(/AUD\b/, " / AUD ")
+    .replace(/JPY\b/, " / JPY ")
+
+export const ComputeScatterData = (aggregatesList, xDataType = 'v', yDataType = 'c') => {
+  if (!aggregatesList) {
+    return {
+      error: true,
+      message: 'There is not data to show in the chosen period.'
+    }
+  }
+  const validDataTypes = ['c', 'h', 'l', 'o', 't', 'v', 'vw']
+  if (validDataTypes.includes(xDataType) && validDataTypes.includes(yDataType)) {
+    return aggregatesList.map((aggregate) => {
+      const dataPoint = {
+        x: aggregate[xDataType],
+        y: aggregate[yDataType],
+        z: 100 * (aggregate.c - aggregate.o) / aggregate.o,
+        time: aggregate.t
+      }
+      if (aggregate?.T) {
+        dataPoint.name = humaniseTicker(aggregate.T)
+        dataPoint.t = aggregate.T
+      } else {
+        dataPoint.name = new Date(aggregate.t).toLocaleString()
+      }
+      return dataPoint
+    })
+  } else {
+    return {
+      error: true,
+      message: 'Chosen dataType is not valid.'
+    }
+  }
+}

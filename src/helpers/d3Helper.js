@@ -74,6 +74,37 @@ export const appendScatterPoints = (plot, data, transition) =>
     .call(enter => enter.transition(transition).attr("opacity", 1))
 
 /**
+ * Add a path following the datapoints
+ */
+export const addLines = (plot, data) => {
+
+  // create the path
+  const line = plot.svg.append("path")
+    .datum(data)
+    .attr("fill", "none")
+    .attr("stroke", "#aaa5")
+    .attr("stroke-width", 3)
+    .attr("opacity", 1)
+    .attr(
+      "d",
+      d3.line()
+        .curve(d3.curveCardinal.tension(0.75))
+        .x(d => plot.xScale(d.x))
+        .y(d => plot.yScale(d.y))
+    )
+
+  // Animate the line
+  const lineLength = line.node().getTotalLength()
+  line.attr("stroke-dashoffset", lineLength)
+    .attr("stroke-dasharray", lineLength)
+    .transition(plot.svg.transition().duration(2000))
+    .attr("stroke-dashoffset", 0)
+
+  return line
+}
+
+
+/**
  * Setup and add zoom and pan action to the selected plot
  */
 export const addZoomPan = (selection, scaleExtent, plot) => {
@@ -92,6 +123,23 @@ export const addZoomPan = (selection, scaleExtent, plot) => {
     plot.points
       .attr('cx', (d) => newX(d.x))
       .attr('cy', (d) => newY(d.y))
+
+    if (plot?.lines) {
+      plot.lines
+        .attr(
+          "d",
+          d3.line()
+            .curve(d3.curveCardinal.tension(0.75))
+            .x(d => newX(d.x))
+            .y(d => newY(d.y))
+        )
+
+      const lineLength = plot.lines.node().getTotalLength()
+      plot.lines
+        .attr("stroke-dasharray", lineLength)
+
+    }
+
   }
 
   // Setup the zoom and pan paramettres
