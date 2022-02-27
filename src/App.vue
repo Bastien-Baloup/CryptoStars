@@ -1,5 +1,8 @@
 <template>
   <header>
+    <router-link :to="{ name: 'Home' }">
+      <img src="../public/logo.svg" alt class="logo" />
+    </router-link>
     <h1>
       <router-link :to="{ name: 'Home' }">CryptoStars</router-link>
     </h1>
@@ -28,8 +31,13 @@ body {
 header {
   display: flex;
   border-bottom: solid 1px #aaa;
+  img {
+    width: 80px;
+    margin-left: 1rem;
+  }
   h1 {
     margin: 0;
+    margin-right: auto;
     padding: 1rem;
     border-right: solid 1px #aaa;
   }
