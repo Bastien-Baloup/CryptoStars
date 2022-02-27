@@ -16,7 +16,7 @@
     <div class="filter">
       <SearchBar
         id="filter"
-        ref="filter"
+        ref="filterInput"
         label="Currency Filter"
         isfilterbar
         @submit.prevent="applyFilter"
@@ -46,17 +46,20 @@ import { getCryptoGroupedDaily, ComputeScatterData, humaniseTicker } from "../se
 import Scatter from '../components/Scatter.vue'
 import SearchBar from '../components/SearchBar.vue'
 
-
 const { getISODate } = useNow()
+
+// reactive state
 const date = ref(getISODate())
 const data = ref(null)
-const filteredData = ref(null)
+const filter = ref(null)
 const error = ref(true)
 const errMsg = ref('')
-const filter = ref(null)
+const filterInput = ref(null)
 
-const scatterData = computed(() => data.value ? ComputeScatterData(filteredData.value ? filteredData.value : data.value.results) : undefined)
-
+// computed values
+const scatterData = computed(() => data.value ? ComputeScatterData(filter.value ? filteredData.value : data.value.results) : undefined)
+const filteredData = computed(() => data.value.results.filter(value => humaniseTicker(value.T).includes(" " + filter.value + " ")))
+// set the error message whent it comes from the ComputeScatterData function
 if (scatterData.value?.error) {
   errMsg.value = scatterData.value.message
 }
@@ -69,32 +72,33 @@ const Error429Msg = "You've exceeded the maximum requests per minute allowed by 
  * Additionaly handle errors thrown by the PoligonIO API service
  */
 const fetchData = async () => {
-  const res = await getCryptoGroupedDaily(date.value).catch((err) => {
-    console.log(err.message)
-    if (err.response?.data?.status === 'ERROR') {
-      return err.response
-    } else {
-      return {
-        data: {
-          status: 'ERROR',
-          error: err.message
+  const res = await getCryptoGroupedDaily(date.value)
+    .catch((err) => {
+      console.log(err.message)
+      if (err.response?.data?.status === 'ERROR') {
+        return err.response
+      } else {
+        return {
+          data: {
+            status: 'ERROR',
+            error: err.message
+          }
         }
       }
-    }
-
-  }
-  )
+    })
+  // update state
   data.value = res.data
   error.value = data.value?.status === 'ERROR' || data.value?.resultsCount === 0
   errMsg.value = res.status === 429 ? Error429Msg : data.value?.error ? data.value.error : scatterData.value.message
-
-  // console.log(data.value)
+  console.log(res)
 }
 
+// update filteredData value when the filter has been changed
 const applyFilter = () => {
-  filteredData.value = data.value.results.filter(value => humaniseTicker(value.T).includes(" " + filter.value.search.toUpperCase() + " "))
+  filter.value = filterInput.value.search.toUpperCase()
 }
 
+// initial data fetch
 onMounted(() => fetchData())
 </script>
 
