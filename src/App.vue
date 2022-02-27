@@ -1,7 +1,7 @@
 <template>
   <header>
     <router-link :to="{ name: 'Home' }">
-      <img src="../public/logo.svg" alt class="logo" />
+      <img src="/logo.svg" alt class="logo" />
     </router-link>
     <h1>
       <router-link :to="{ name: 'Home' }">CryptoStars</router-link>

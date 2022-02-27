@@ -1,7 +1,6 @@
 import axios from "axios"
 import { useNow } from '../composables/now'
 
-const { getISODate } = useNow()
 // Axios client for the Polygone.io REST API
 // using the Authorization header for authentification
 const apiClient = axios.create({
@@ -20,6 +19,7 @@ const apiClient = axios.create({
  * @returns {Promise<AxiosResponse>} 
  */
 export const getCryptoGroupedDaily = (date) => {
+  const { getISODate } = useNow()
   // test if the string is a date formated in ISO 8601
   if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
     const _date = new Date(date)
@@ -44,6 +44,7 @@ export const getCryptoGroupedDaily = (date) => {
  * @returns {Promise<AxiosResponse>}
  */
 export const getCryptoAggregate = (ticker, from, to, timespan, timespanMult) => {
+  const { getISODate } = useNow()
   if (/^\d{4}-\d{2}-\d{2}$/.test(from) && /^\d{4}-\d{2}-\d{2}$/.test(to)) {
     const _from = new Date(from)
     const _to = new Date(to)
