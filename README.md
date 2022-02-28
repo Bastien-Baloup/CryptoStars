@@ -4,7 +4,7 @@
 CryptoStars is an app allowing users to see crypto market data in different ways.
 It uses data from the [poligon.io](https://polygon.io/) API.
 
-CryptoStars is available [here](cryptostars.bbaloup.fr) !
+CryptoStars is available [here](https://cryptostars.bbaloup.fr) !
 
 ## Dependencies
 
