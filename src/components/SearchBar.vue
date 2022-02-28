@@ -47,6 +47,7 @@
         aria-label="list of autocomplete results"
       >
         <li v-if="isLoading" class="loading">Loading results...</li>
+        <li v-else-if="results.length === 0" class="loading">No results Found</li>
         <li
           v-for="(result, i) in results"
           v-else
@@ -81,7 +82,7 @@ const isOpen = ref(false)
 const results = ref([])
 const search = ref("")
 const isLoading = ref(false)
-const debounceTimeout = ref(null)
+// const debounceTimeout = ref(null)
 const arrowCounter = ref(0)
 const activedescendant = ref("")
 
@@ -518,24 +519,37 @@ defineExpose({ search })
 
 //remove the selection then, when the user has stopped typing for 500ms, load the new suggestions
 // usefull when searchResults commmes from an API
+// const onInput = () => {
+//   arrowCounter.value = -1
+//   if (search.value.length > 0) {
+//     isLoading.value = true
+//     // use clearTimeout and setTimeout to update results when the user stop writing
+//     clearTimeout(debounceTimeout.value)
+//     debounceTimeout.value = setTimeout(() => LoadSuggestions(search.value), 500)
+//   } else {
+//     clearTimeout(debounceTimeout.value)
+//     results.value = []
+//     isOpen.value = false
+//   }
+// }
+// because we don't get our values from an API we'll use this instead
 const onInput = () => {
   arrowCounter.value = -1
   if (search.value.length > 0) {
+    isOpen.value = true
     isLoading.value = true
-    // use clearTimeout and setTimeout to update results when the user stop writing
-    clearTimeout(debounceTimeout.value)
-    debounceTimeout.value = setTimeout(() => LoadSuggestions(search.value), 500)
+    LoadSuggestions(search.value)
   } else {
-    clearTimeout(debounceTimeout.value)
     results.value = []
     isOpen.value = false
   }
-
 }
 
 //open the list
 const onFocus = () => {
-  isOpen.value = true
+  if (search.value.length > 0) {
+    isOpen.value = true
+  }
 }
 
 //change the selected suggestions for the one under in the list if there is one
