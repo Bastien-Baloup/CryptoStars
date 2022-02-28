@@ -23,7 +23,8 @@ You can find in the header a homemade accessible search bar that will allow you 
 ![picture of the homepage](img/homePage.png)
 
 On the homepage, you can find a scatter plot of the state of the market. Each point represents a currency pair.  
-Here you can choose the day from with the data is taken, you can filter by a single currency, and you can select what data is used for each axes.
+Here you can choose the day from with the data is taken, you can filter by a single currency, and you can select what data is used for each axes.  
+The color of each point represents the difference between the opening value and the closing value of the currency pair on the chosen date.
 
 ![tooltip](img/2022-02-28_02-15.png)
 
