@@ -28,7 +28,7 @@ The color of each point represents the difference between the opening value and 
 
 ![tooltip](img/2022-02-28_02-15.png)
 
-When close enough the closest point to your cursor will get bigger and a tooltip will become visible showing the values.  
+When close enough, the closest point to your cursor will get bigger and a tooltip will become visible showing the values.  
 Clicking on one of these points will get you to the corresponding "Currency pair history" page. 
 
 ### Currency pair history
