@@ -41,3 +41,7 @@ You will be able to choose the period of time of this history and how much time 
 ![currency pair history page with a time based plot](img/cryptoPage-time.png)
 
 The line between the points shows the flow of time between them.
+
+## TODO
+
+Making it mobile friendly
