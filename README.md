@@ -16,7 +16,7 @@ CryptoStars is available [here](cryptostars.bbaloup.fr) !
 
 ### Search
 
-You can find in the header an home made accessible search bar witch will alow you to search and go to the history page for a currency pair of your choise.
+You can find in the header a homemade accessible search bar that will allow you to search and go to the history page for a currency pair of your choice.
 
 ### Market overview
 
