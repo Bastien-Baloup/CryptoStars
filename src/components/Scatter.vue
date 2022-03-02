@@ -48,8 +48,8 @@ const setupPlot = () => {
  */
 const updatePlot = () => {
   // Setup scales domains
-  plot.xScale.domain([0.9 * d3.min(props.data, d => d.x), 1.1 * d3.max(props.data, d => d.x)])
-  plot.yScale.domain([0.9 * d3.min(props.data, d => d.y), 1.1 * d3.max(props.data, d => d.y)])
+  plot.xScale.domain([d3.min(props.data, d => d.x) - 10, d3.max(props.data, d => d.x)])
+  plot.yScale.domain([d3.min(props.data, d => d.y), d3.max(props.data, d => d.y)])
   const zLimit = d3.min([25, d3.max(props.data, d => Math.abs(d.z))])
   plot.colorScale.domain([-zLimit, 0, zLimit])
   // Setup axes
