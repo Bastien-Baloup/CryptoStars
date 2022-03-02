@@ -573,7 +573,7 @@ const onArrowUp = () => {
 //if the list is open, update the input content with the chosen suggestion if the use did choose one, else submit the form when the list is closed
 const onEnter = (e) => {
   if (isOpen.value) {
-    search.value = arrowCounter.value >= 0 ? results.value[arrowCounter.value].data.display_name : search.value
+    search.value = arrowCounter.value >= 0 ? results.value[arrowCounter.value] : search.value
     isOpen.value = false
   } else {
     e.target.parentElement.parentElement.requestSubmit()
