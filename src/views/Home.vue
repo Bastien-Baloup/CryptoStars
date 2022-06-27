@@ -7,8 +7,8 @@
         v-model="date"
         type="date"
         name="date"
-        :min="getISODate(y = -2)"
-        :max="getISODate()"
+        :min="getISODate(-2,0,0)"
+        :max="getISODate(0,0,-1)"
         pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"
         @change="fetchData"
       />
@@ -71,7 +71,7 @@ import SearchBar from '../components/SearchBar.vue'
 const { getISODate } = useNow()
 
 // reactive state
-const date = ref(getISODate())
+const date = ref(getISODate(0,0,-1))
 const data = ref(null)
 const filter = ref(null)
 const error = ref(true)

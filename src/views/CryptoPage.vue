@@ -8,7 +8,7 @@
         v-model="from"
         type="date"
         name="from"
-        :min="getISODate(y = -2)"
+        :min="getISODate(-2,0,0)"
         :max="to"
         pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"
         @change="fetchData"
@@ -20,7 +20,7 @@
         type="date"
         name="to"
         :min="from"
-        :max="getISODate()"
+        :max="getISODate(0,0,-1)"
         pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"
         @change="fetchData"
       />
@@ -83,8 +83,8 @@ const props = defineProps({
   ticker: { type: String, default: '' }
 })
 // reactuve state
-const from = ref(getISODate(0, -1))
-const to = ref(getISODate())
+const from = ref(getISODate(0,-1,0))
+const to = ref(getISODate(0,0,-1))
 const selectTimespan = ref("3 day")
 const data = ref([])
 const error = ref(true)
